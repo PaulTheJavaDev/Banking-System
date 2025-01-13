@@ -1,11 +1,15 @@
+import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Bank {
 
     static Scanner scanner = new Scanner(System.in);
+    //static HashMap<String, String> takenUsers = new HashMap<>(); //first String = username, second String = password, just a thought tho
     static String[] takenUsernames = {"PaulTheJavaDev"};
     static Account user; //user is first assigned null, changes in the program later, might not change if the user is not assigned
+    static boolean userCreated = false;
+    static boolean userIsLoggedIn = false;
 
     public static void createAccount() {
         Random random = new Random();
@@ -36,14 +40,13 @@ public class Bank {
         System.out.println("What would you like your password to be?");
         String password = scanner.nextLine();
 
-        // Generates a custom userID example: bankingUser3285725
-        String userID = "bankingUser" + random.nextInt(Integer.MAX_VALUE);
-
-        user = new Account(usernameAnswer, password, userID, 0);
+        takenUsers.put(usernameAnswer, password);
         addToArray(takenUsernames, user.getUsername());
+        userCreated = true;
     }
 
-    public static String[] addToArray(String[] array, String newElement) {
+    //made addToArray private so the Main class can't have access to it
+    private static String[] addToArray(String[] array, String newElement) {
         // Create a new array with one additional slot
         String[] newArray = new String[array.length + 1];
 

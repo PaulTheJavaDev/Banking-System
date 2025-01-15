@@ -6,14 +6,18 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         //big thanks to @etylermoss for the english swear words list!
 
+        Bank.takenUsers.put("PaulTheJavaDev", "HelloWorld!"); //very secure password!!
+
         while (true) {
             System.out.println("+-----------------------------------------------+");
-            System.out.println("|                 Library Menu                  |");
+            System.out.println("|                   Bank Menu                   |");
             System.out.println("|               Select an Option                |");
             System.out.println("+-----------------------------------------------+");
             System.out.println("|  1. create a Account                          |");
-            System.out.println("|  2. Deposit Money                             |");
-            System.out.println("|  3. Withdraw Money                            |");
+            System.out.println("|  2. Login                                     |");
+            System.out.println("|  3. Logout                                    |");
+            System.out.println("|  4. Deposit Money                             |");
+            System.out.println("|  5. Withdraw Money                            |");
             System.out.println("+-----------------------------------------------+");
 
             int userInput = scanner.nextInt();
@@ -21,8 +25,10 @@ public class Main {
 
             switch(userInput) {
                 case 1 -> Bank.createAccount();
-                case 2 -> Bank.depositMoney();
-                case 3 -> Bank.withdrawMoney();
+                case 2 -> Bank.login();
+                case 3 -> Bank.logout();
+                case 4 -> Bank.depositMoney();
+                case 5 -> Bank.withdrawMoney();
                 default -> System.out.println("Please enter a valid number!");
             }
         } //while loop ends here

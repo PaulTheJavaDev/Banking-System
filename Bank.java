@@ -5,71 +5,83 @@ import java.util.Scanner;
 public class Bank {
 
     static Scanner scanner = new Scanner(System.in);
-    //static HashMap<String, String> takenUsers = new HashMap<>(); //first String = username, second String = password, just a thought tho
-    static String[] takenUsernames = {"PaulTheJavaDev"};
-    static Account user; //user is first assigned null, changes in the program later, might not change if the user is not assigned
+    static HashMap<String, String> takenUsers = new HashMap<>(); // Key: username, Value: password
+    static Account user; // user is first assigned null, changes in the program later, might not change if the user is not assigned
     static boolean userCreated = false;
     static boolean userIsLoggedIn = false;
 
     public static void createAccount() {
-        Random random = new Random();
-
         System.out.println("What would you like your username to be?");
         String usernameAnswer;
 
-        //loops through the taken Usernames and looks, if the selected username of the user is equal to a taken username
+        //loops through the taken Usernames and looks if the selected username is taken
         while (true) {
             usernameAnswer = scanner.nextLine();
 
-            boolean isTaken = false;
-            for (String takenUsername : takenUsernames) {
-                if (usernameAnswer.equals(takenUsername)) {
-                    System.out.println("Unavailable Username, please select another one!");
-                    isTaken = true;
-                    break;
-                }
-            }
-
-            if (!isTaken) {
+            if (takenUsers.containsKey(usernameAnswer)) {
+                System.out.println("Unavailable Username, please select another one!");
+            } else {
                 System.out.printf("\nAvailable username, welcome %s!\n", usernameAnswer);
                 break;
             }
         }
 
-        //assigning values to finally create the account
         System.out.println("What would you like your password to be?");
         String password = scanner.nextLine();
 
+        //stores the username and password in the HashMap
         takenUsers.put(usernameAnswer, password);
-        addToArray(takenUsernames, user.getUsername());
         userCreated = true;
     }
 
-    //made addToArray private so the Main class can't have access to it
-    private static String[] addToArray(String[] array, String newElement) {
-        // Create a new array with one additional slot
-        String[] newArray = new String[array.length + 1];
+    // Login functionality
+    public static void login() {
 
-        // Copy elements from the original array
-        System.arraycopy(array, 0, newArray, 0, array.length);
+        Random random = new Random();
+        String userID = "user" + random.nextInt(1_000_000, 1_000_000_000) + 1;
 
-        newArray[array.length] = newElement;
+        if (userIsLoggedIn) {
+            System.out.println("You are already logged in.");
+            return;
+        }
 
-        return newArray; // Return the updated array
+        System.out.println("Enter your username:");
+        String username = scanner.nextLine();
+
+        System.out.println("Enter your password:");
+        String password = scanner.nextLine();
+
+        // Check if the username and password are correct
+        if (takenUsers.containsKey(username) && takenUsers.get(username).equals(password)) {
+            userIsLoggedIn = true;
+            user = new Account(username, password, userID, 0);
+            System.out.println("Login successful! Welcome " + username);
+        } else {
+            System.out.println("Invalid username or password.");
+        }
     }
 
+    //Logout functionality
+    public static void logout() {
+        if (!userIsLoggedIn) {
+            System.out.println("You are not logged in.");
+        } else {
+            userIsLoggedIn = false;
+            user = null;
+            System.out.println("You have logged out successfully.");
+        }
+    }
 
     public static void depositMoney() {
-        if (user == null) {
-            System.out.println("No account found. Please create an account first.");
+        if (!userIsLoggedIn) {
+            System.out.println("You must be logged in to perform this action!");
             return;
         }
 
         System.out.printf("\nYou currently have %d€.\n", user.getBalance());
         System.out.println("How much money would you like to deposit?");
-
         int depositAmount = scanner.nextInt();
-        scanner.nextLine();
+        scanner.nextLine(); // Consume the newline character
 
         if (depositAmount > 0) {
             user.depositMoney(depositAmount);
@@ -80,21 +92,23 @@ public class Bank {
     }
 
     public static void withdrawMoney() {
-        if (user == null) {
-            System.out.println("No account found. Please create an account first.");
+
+        int currentMoney = user.getBalance();
+
+        if (!userIsLoggedIn) {
+            System.out.println("You must be logged in to perform this action!");
             return;
         }
 
         System.out.printf("\nYou currently have %d€.\n", user.getBalance());
         System.out.println("How much money would you like to withdraw?");
-
         int withdrawAmount = scanner.nextInt();
         scanner.nextLine(); // Consume the newline character
 
         if (withdrawAmount > 0) {
             if (withdrawAmount <= user.getBalance()) {
                 user.withdrawMoney(withdrawAmount);
-                System.out.printf("Successfully withdrew %d€. Your new balance is %d€.\n", withdrawAmount, user.getBalance() - withdrawAmount);
+                System.out.printf("Successfully withdrew %d€. Your new balance is %d€.\n", withdrawAmount, currentMoney - withdrawAmount);
             } else {
                 System.out.println("Insufficient balance. Please enter a smaller amount.");
             }

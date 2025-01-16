@@ -18,6 +18,7 @@ public class Main {
             System.out.println("|  3. Logout                                    |");
             System.out.println("|  4. Deposit Money                             |");
             System.out.println("|  5. Withdraw Money                            |");
+            System.out.println("|  6. Deposit Money on another Account          |");
             System.out.println("+-----------------------------------------------+");
 
             int userInput = scanner.nextInt();
@@ -26,9 +27,10 @@ public class Main {
             switch(userInput) {
                 case 1 -> Bank.createAccount();
                 case 2 -> Bank.login();
-                case 3 -> Bank.logout();
-                case 4 -> Bank.depositMoney();
-                case 5 -> Bank.withdrawMoney();
+                case 3 -> Bank.depositMoney();
+                case 4 -> Bank.withdrawMoney();
+                case 5 -> Bank.depositMoneyOnOtherAccount();
+                case 6 -> Bank.logout();
                 default -> System.out.println("Please enter a valid number!");
             }
         } //while loop ends here

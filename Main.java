@@ -15,10 +15,10 @@ public class Main {
             System.out.println("+-----------------------------------------------+");
             System.out.println("|  1. create a Account                          |");
             System.out.println("|  2. Login                                     |");
-            System.out.println("|  3. Logout                                    |");
-            System.out.println("|  4. Deposit Money                             |");
-            System.out.println("|  5. Withdraw Money                            |");
-            System.out.println("|  6. Deposit Money on another Account          |");
+            System.out.println("|  3. Deposit Money                             |");
+            System.out.println("|  4. Withdraw Money                            |");
+            System.out.println("|  5. Deposit Money on another Account          |");
+            System.out.println("|  6. Logout                                    |");
             System.out.println("+-----------------------------------------------+");
 
             int userInput = scanner.nextInt();

@@ -9,6 +9,8 @@ public class Bank {
     static Account user; // user is first assigned null, changes in the program later, might not change if the user is not assigned
     static boolean userCreated = false;
     static boolean userIsLoggedIn = false;
+    static Random random = new Random();
+    static String userID = "user" + random.nextInt(1_000_000, 1_000_000_000) + 1;
 
     public static void createAccount() {
         System.out.println("What would you like your username to be?");
@@ -29,47 +31,10 @@ public class Bank {
         System.out.println("What would you like your password to be?");
         String password = scanner.nextLine();
 
-        //stores the username and password in the HashMap
+        //stores the username and password in the HashMap + creates an account (helpful for transactions between existing Accounts)
         takenUsers.put(usernameAnswer, password);
+        new Account(usernameAnswer, password, userID, 0);
         userCreated = true;
-    }
-
-    // Login functionality
-    public static void login() {
-
-        Random random = new Random();
-        String userID = "user" + random.nextInt(1_000_000, 1_000_000_000) + 1;
-
-        if (userIsLoggedIn) {
-            System.out.println("You are already logged in.");
-            return;
-        }
-
-        System.out.println("Enter your username:");
-        String username = scanner.nextLine();
-
-        System.out.println("Enter your password:");
-        String password = scanner.nextLine();
-
-        // Check if the username and password are correct
-        if (takenUsers.containsKey(username) && takenUsers.get(username).equals(password)) {
-            userIsLoggedIn = true;
-            user = new Account(username, password, userID, 0);
-            System.out.println("Login successful! Welcome " + username);
-        } else {
-            System.out.println("Invalid username or password.");
-        }
-    }
-
-    //Logout functionality
-    public static void logout() {
-        if (!userIsLoggedIn) {
-            System.out.println("You are not logged in.");
-        } else {
-            userIsLoggedIn = false;
-            user = null;
-            System.out.println("You have logged out successfully.");
-        }
     }
 
     public static void depositMoney() {
@@ -100,7 +65,7 @@ public class Bank {
             return;
         }
 
-        System.out.printf("\nYou currently have %d€.\n", user.getBalance());
+        System.out.printf("\nYou currently have %d€.\n", currentMoney);
         System.out.println("How much money would you like to withdraw?");
         int withdrawAmount = scanner.nextInt();
         scanner.nextLine(); // Consume the newline character
@@ -113,7 +78,90 @@ public class Bank {
                 System.out.println("Insufficient balance. Please enter a smaller amount.");
             }
         } else {
-            System.out.println("Invalid withdrawal amount. Please enter a positive number.");
+            System.out.println("Invalid withdrawal amount. Please enter a valid number.");
+        }
+    }
+
+    //Login functionality
+    public static void login() {
+
+        //checking if user is already logged in
+        if (userIsLoggedIn) {
+            System.out.println("You are already logged in.");
+            return;
+        }
+
+        //gets username and password
+        System.out.println("Enter your username:");
+        String username = scanner.nextLine();
+
+        System.out.println("Enter your password:");
+        String password = scanner.nextLine();
+
+        // Check if the username and password are matching any of the stored users
+        if (takenUsers.containsKey(username) && takenUsers.get(username).equals(password)) {
+            userIsLoggedIn = true;
+            user = new Account(username, password, userID, 0);
+            System.out.println("Login successful! Welcome " + username);
+        } else {
+            System.out.println("Invalid username or password.");
+        }
+    }
+
+    //Logout functionality
+    public static void logout() {
+        if (!userIsLoggedIn) {
+            System.out.println("You are not logged in.");
+        } else {
+            userIsLoggedIn = false;
+            user = null;
+            System.out.println("You have logged out successfully.");
+        }
+    }
+
+    public static void depositMoneyOnOtherAccount() {
+        if (!userIsLoggedIn) {
+            System.out.println("You must be logged in to perform this action!");
+            return;
+        }
+
+        int currentMoney = user.getBalance();
+        System.out.printf("\nYou currently have %d€.\n", currentMoney);
+        System.out.println("Please type the username of the recipient or type 'exit' to cancel the transaction.");
+        String transactionUsername = scanner.nextLine();
+
+        if (transactionUsername.equalsIgnoreCase("exit")) {
+            System.out.println("Transaction canceled.");
+            return;
+        }
+
+        // Check if the recipient user exists
+        if (!Account.accountExists(transactionUsername)) {
+            System.out.println("The specified user does not exist. Transaction canceled.");
+            return;
+        }
+
+        // Ask for the transaction amount
+        System.out.println("How much money would you like to transfer?");
+        int transactionAmount = scanner.nextInt();
+        scanner.nextLine(); // Consume the newline character
+
+        if (transactionAmount > 0) {
+            if (transactionAmount <= user.getBalance()) {
+                // Deduct money from the current user's account
+                user.withdrawMoney(transactionAmount);
+
+                // Deposit money into the recipient's account
+                Account recipient = Account.getAccount(transactionUsername);
+                recipient.depositMoney(transactionAmount);
+
+                System.out.printf("Successfully transferred %d€ to %s. Your new balance is %d€.\n",
+                        transactionAmount, transactionUsername, user.getBalance());
+            } else {
+                System.out.println("Insufficient balance. Please enter a smaller amount.");
+            }
+        } else {
+            System.out.println("Invalid transfer amount. Please enter a positive number.");
         }
     }
 }

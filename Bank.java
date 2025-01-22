@@ -9,10 +9,9 @@ public class Bank {
     static Account user; // user is first assigned null, changes in the program later, might not change if the user is not assigned
     static boolean userCreated = false;
     static boolean userIsLoggedIn = false;
-    static Random random = new Random();
-    static String userID = "user" + random.nextInt(1_000_000, 1_000_000_000) + 1;
+    static String userID = "user" + new Random().nextInt(1_000_000, 1_000_000_000) + 1;
 
-    public static void createAccount() {
+    public void createAccount() {
         System.out.println("What would you like your username to be?");
         String usernameAnswer;
 
@@ -37,7 +36,7 @@ public class Bank {
         userCreated = true;
     }
 
-    public static void depositMoney() {
+    public void depositMoney() {
         if (!userIsLoggedIn) {
             System.out.println("You must be logged in to perform this action!");
             return;
@@ -56,7 +55,7 @@ public class Bank {
         }
     }
 
-    public static void withdrawMoney() {
+    public void withdrawMoney() {
 
         int currentMoney = user.getBalance();
 
@@ -82,12 +81,11 @@ public class Bank {
         }
     }
 
-    //Login functionality
-    public static void login() {
+    public void login() {
 
         //checking if user is already logged in
-        if (userIsLoggedIn) {
-            System.out.println("You are already logged in.");
+        if (userIsLoggedIn || !userCreated) {
+            System.out.println("You can't perform this action!");
             return;
         }
 
@@ -108,8 +106,29 @@ public class Bank {
         }
     }
 
-    //Logout functionality
-    public static void logout() {
+    public void createSavingsAccount() {
+
+        if (!userIsLoggedIn) {
+            System.out.println("You must be logged in to perform this action!");
+            return;
+        }
+
+        System.out.println("Hello, you are here to create a new savings Account. Do you want to proceed?");
+        String proceed = scanner.next();
+
+        if (!proceed.equalsIgnoreCase("yes")) {
+            return;
+        }
+
+        double interestRate = new Random().nextDouble(1, 10) + 1;
+        System.out.printf("\nYour savings account interest Rate would be %d%.", interestRate);
+        new SavingsAccount(user.getBalance(), interestRate);
+        
+        //make it run every 5 seconds in the background, that the user gets the money
+        
+    }
+
+    public void logout() {
         if (!userIsLoggedIn) {
             System.out.println("You are not logged in.");
         } else {
@@ -119,7 +138,8 @@ public class Bank {
         }
     }
 
-    public static void depositMoneyOnOtherAccount() {
+    public void depositMoneyOnOtherAccount() {
+
         if (!userIsLoggedIn) {
             System.out.println("You must be logged in to perform this action!");
             return;
